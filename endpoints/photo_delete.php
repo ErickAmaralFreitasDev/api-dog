@@ -6,14 +6,6 @@ function api_photo_delete($request) {
     $author_id = (int) $post->post_author;
     $user_id = $user -> ID;
 
-    // if (!$post) {
-    //     $response = new WP_Error('error', 'Post não encontrado', ['status' => 404]);
-    //     return rest_ensure_response($response);
-    // }
-    
-    // $author_id = $post->post_author;
-
-
     if ($user_id !== $author_id || !isset($post)) {
         $response = new WP_Error('error', 'Usuário não possui permissão', ['status' => 401]);
         return rest_ensure_response($response);
