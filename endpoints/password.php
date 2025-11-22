@@ -4,9 +4,9 @@ function api_password_lost($request) {
     $url = $request['url'];
 
     if(empty($login)) {
-        return new WP_Error('error', 'Login é obrigatório', ['status' => 406]);
+        $response = new WP_Error('error', 'Login é obrigatório', ['status' => 406]);
+        return rest_ensure_response($response);
     }
-
     $user = get_user_by('email', $login);
     if(empty($user)) {
         $user = get_user_by('login', $login);
@@ -19,23 +19,11 @@ function api_password_lost($request) {
     $user_login = $user->user_login;
     $user_email = $user->user_email;
     $key = get_password_reset_key($user);
-
-    // Corrigindo a construção da URL
-    $reset_url = esc_url_raw($url . "/?key=$key&login=" . rawurlencode($user_login));
     
     $message = "Utilize o link abaixo para resetar sua senha:\r\n";
-    $message .= $reset_url;
-
-    // Corrigindo a função de envio de email
-    $email_sent = wp_mail(
-        $user_email,
-        'Recuperação de senha',
-        $message
-    );
-
-    if(!$email_sent) {
-        return new WP_Error('error', 'Falha ao enviar email', ['status' => 500]);
-    }
+    $url = esc_url_raw($url . "/?key=$key&=" . rawurldecode($user_login) . "\r\n");
+    $body = $message . $url;
+    wp_mail($user_email, 'Redefinição de senha', $body);
 
     return rest_ensure_response(['message' => 'Email enviado com sucesso']);
 }
