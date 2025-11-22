@@ -9,8 +9,12 @@ function api_comment_post($request) {
         return rest_ensure_response($response);
     }
 
+    $post = get_post($post_id);
+    if ($post->post_type === 'attachment' && $post->post_parent > 0) {
+        $post_id = $post->post_parent; // Usar o post principal
+    }
     $comment = sanitize_text_field($request['comment']);
-    $post_id = $request['id'];
+    // $post_id = $request['id'];
 
     if (empty($comment)) {
         $response = new WP_Error('error', 'Comentário não pode ser vazio', ['status' => 422]);

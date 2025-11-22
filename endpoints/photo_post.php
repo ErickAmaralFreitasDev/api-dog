@@ -38,6 +38,7 @@ function api_photo_post($request) {
     require_once ABSPATH . 'wp-admin/includes/file.php';
     require_once ABSPATH . 'wp-admin/includes/media.php';
 
+
     $photo_id = media_handle_upload('img', $post_id);
 
     update_post_meta($post_id, 'img', $photo_id);

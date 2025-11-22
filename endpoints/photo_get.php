@@ -2,7 +2,15 @@
 
 function photo_data ($post) {
     $post_meta = get_post_meta($post->ID);
-    $src = wp_get_attachment_image_src($post_meta['img'][0], 'large')[0];
+    $img_id = isset($post_meta['img'][0]) ? $post_meta['img'][0] : '';
+    $src = '';
+    
+    if (!empty($img_id)) {
+        $image_data = wp_get_attachment_image_src($img_id, 'large');
+        if ($image_data) {
+            $src = $image_data[0];
+        }
+    }
     $user = get_userdata($post->post_author);
     $total_comments = get_comments_number($post->ID);
     return [

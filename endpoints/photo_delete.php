@@ -4,7 +4,7 @@ function api_photo_delete($request) {
     $user = wp_get_current_user();
     $post = get_post($post_id);
     $author_id = (int) $post->post_author;
-    $user_id = $user -> ID;
+    $user_id = (int) $user -> ID;
 
     if ($user_id !== $author_id || !isset($post)) {
         $response = new WP_Error('error', 'Usuário não possui permissão', ['status' => 401]);
