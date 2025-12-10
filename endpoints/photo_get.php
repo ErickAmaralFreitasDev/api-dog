@@ -13,12 +13,19 @@ function photo_data ($post) {
     }
     $user = get_userdata($post->post_author);
     $total_comments = get_comments_number($post->ID);
+
+    $src_fallback = '';
+    if (isset($post_meta['img'][0])) {
+        $image_data = wp_get_attachment_image_src($post_meta['img'][0], 'large');
+        $src_fallback = $image_data ? $image_data[0] : '';
+    }
+
     return [
         'id' => $post->ID,
         'author' => $user ? $user->user_login : 'Anônimo',
         'title' => $post->post_title,
         'date' => date('d/m/Y H:i', strtotime($post->post_date)),
-        'src' => isset($post_meta['img'][0]) ? wp_get_attachment_image_src($post_meta['img'][0], 'large')[0] : '',
+        'src' => $src_fallback,
         'peso' => $post_meta['peso'][0] ?? 'Não informado',
         'idade' => $post_meta['idade'][0] ?? 'Não informado',
         'acessos' => $post_meta['acessos'][0] ?? 0,
@@ -68,7 +75,7 @@ function api_photos_get($request) {
 
     if(!is_numeric($_user)) {
         $user = get_user_by('login', $_user);
-            if (!$__user) {
+            if (!$user) {
                 $response = new WP_Error('error', 'Usuário não encontrado', ['status' => 404]);
                 return rest_ensure_response($response);
             }
